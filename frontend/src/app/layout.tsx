@@ -13,7 +13,9 @@ const RootLayout = ({
 }) => {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body className="bg-background-primary text-text-primary antialiased">
+        {children}
+      </body>
     </html>
   );
 };
