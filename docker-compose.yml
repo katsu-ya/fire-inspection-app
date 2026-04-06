@@ -2,6 +2,8 @@ services:
   # MySQLデータベース
   db:
     image: mysql:8.0
+    # 日本語文字化け防止: utf8mb4 を強制
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     env_file: .env
     ports:
       - "3306:3306"

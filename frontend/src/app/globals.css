@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ベーススタイル: カスタムカラーをhtmlレベルで確実に適用する */
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background-primary text-text-primary;
+  }
+
+  /* スクロールバーをダークテーマに合わせる */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-background-secondary;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-background-tertiary rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-muted;
+  }
+
+  /* select要素のデフォルト色を上書きする */
+  select option {
+    @apply bg-background-secondary text-text-primary;
+  }
+
+  /* input[type=date] のカレンダーアイコンをダークに合わせる */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+  }
+}

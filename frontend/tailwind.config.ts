@@ -23,7 +23,7 @@ const config: Config = {
         text: {
           primary: "#f1f5f9",
           secondary: "#94a3b8",
-          muted: "#475569",
+          muted: "#64748b",  // 可読性向上のため少し明るく調整
         },
         status: {
           danger: "#ef4444",

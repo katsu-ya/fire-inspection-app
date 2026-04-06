@@ -1,6 +1,9 @@
 -- 在庫管理システム 初期スキーマ
 USE inventory_db;
 
+-- 日本語文字化け防止: utf8mb4 に設定
+ALTER DATABASE inventory_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- ユーザーテーブル
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -10,14 +13,14 @@ CREATE TABLE IF NOT EXISTS users (
     is_active BOOLEAN DEFAULT TRUE COMMENT '有効フラグ',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
     updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時'
-) COMMENT='ユーザー';
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT='ユーザー';
 
 -- カテゴリテーブル
 CREATE TABLE IF NOT EXISTS categories (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) UNIQUE NOT NULL COMMENT 'カテゴリ名',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時'
-) COMMENT='商品カテゴリ';
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT='商品カテゴリ';
 
 -- 商品テーブル
 CREATE TABLE IF NOT EXISTS products (
@@ -32,7 +35,7 @@ CREATE TABLE IF NOT EXISTS products (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
     updated_at DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
-) COMMENT='商品';
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT='商品';
 
 -- 在庫入出庫トランザクションテーブル
 CREATE TABLE IF NOT EXISTS inventory_transactions (
@@ -45,7 +48,7 @@ CREATE TABLE IF NOT EXISTS inventory_transactions (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (created_by) REFERENCES users(id)
-) COMMENT='在庫入出庫トランザクション';
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT='在庫入出庫トランザクション';
 
 -- シードデータ: カテゴリ
 INSERT INTO categories (name) VALUES
