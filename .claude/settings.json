@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "sandbox": {
+    "enabled": false
+  },
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(*.env)",
+      "Read(.env.*)",
+      "Bash(cat *.env*)",
+      "Bash(head *.env*)",
+      "Bash(tail *.env*)",
+      "Bash(less *.env*)",
+      "Bash(more *.env*)",
+      "Bash(grep *.env*)",
+      "Bash(sed *.env*)",
+      "Bash(awk *.env*)",
+      "Bash(vim *.env*)",
+      "Bash(nano *.env*)",
+      "Bash(bat *.env*)",
+      "Read(*.key)",
+      "Read(*.pem)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Read(credentials/**)",
+      "Read(secrets/**)",
+      "Read(.gradle/**)",
+      "Read(build/**)",
+      "Read(out/**)",
+      "Read(bin/**)",
+      "Read(*.class)",
+      "Read(*.jar)",
+      "Read(*.war)",
+      "Read(*.zip)",
+      "Read(*.tar.gz)",
+      "Bash(* ..*)",
+      "Bash(cd ..*)",
+      "Bash(* /*)",
+      "Bash(* /**)",
+      "Bash(* ~/*)",
+      "Bash(* ~/**)",
+      "Bash(gcloud app deploy *)",
+      "Bash(gcloud run deploy *)",
+      "Bash(gcloud functions deploy *)",
+      "Bash(sudo *)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~/*)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(yarn add *)",
+      "Bash(docker compose build *)",
+      "Bash(docker compose up *)",
+      "Bash(sh shell/*)",
+      "Bash(bash shell/*)",
+      "Bash(./shell/*)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(*)"
+    ],
+    "allow": [
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(pwd)",
+      "Bash(find *)",
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git log)",
+      "Bash(./gradlew classes)",
+      "Bash(./gradlew testClasses)",
+      "Bash(./gradlew test)",
+      "Bash(./gradlew :mbs_admin:test)",
+      "Bash(./gradlew :mbs_batch:test)",
+      "Bash(./gradlew :mbs_common:test)",
+      "Bash(./gradlew :mbs_web:test)"
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0"
+  }
+}
