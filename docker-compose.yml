@@ -1,0 +1,57 @@
+services:
+  # MySQLデータベース
+  db:
+    image: mysql:8.0
+    env_file: .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app_network
+
+  # FastAPIバックエンド
+  backend:
+    build: ./backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  # Next.jsフロントエンド
+  frontend:
+    build: ./frontend
+    env_file: .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      # Dockerコンテナ内でのファイル変更検知にポーリングを使用
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+    networks:
+      - app_network
+
+# 名前付きボリューム（DBデータの永続化）
+volumes:
+  mysql_data:
+
+# サービス間通信用ブリッジネットワーク
+networks:
+  app_network:
+    driver: bridge

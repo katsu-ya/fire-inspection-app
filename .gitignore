@@ -1,0 +1,21 @@
+# 環境変数（シークレット情報を含むためコミット禁止）
+.env
+
+# Node.js
+node_modules/
+.next/
+out/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
