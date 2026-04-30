@@ -1,4 +1,7 @@
 -- 在庫管理システム 初期スキーマ
+-- 文字コードを明示的にutf8mb4に設定（init.sqlを latin1 で処理させないため）
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 USE inventory_db;
 
 -- 日本語文字化け防止: utf8mb4 に設定
