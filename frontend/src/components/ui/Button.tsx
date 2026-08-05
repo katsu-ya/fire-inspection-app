@@ -1,7 +1,7 @@
 // 汎用ボタンコンポーネント
 "use client";
 
-type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "danger" | "success" | "ghost";
 
 type ButtonProps = {
   children: React.ReactNode;
@@ -13,13 +13,17 @@ type ButtonProps = {
   className?: string;
 };
 
+// バリアントごとのスタイル
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-accent hover:bg-accent-hover text-white",
-  secondary: "bg-background-tertiary hover:bg-background-tertiary/80 text-text-primary",
-  danger: "bg-status-danger hover:bg-status-danger/80 text-white",
-  ghost: "bg-transparent hover:bg-background-tertiary text-text-secondary",
+  primary: "bg-brand hover:bg-brand-hover text-white shadow-sm",
+  secondary:
+    "bg-surface-card hover:bg-brand-faint text-ink-secondary border border-surface-border",
+  danger: "bg-status-danger hover:bg-status-danger/85 text-white shadow-sm",
+  success: "bg-status-success hover:bg-status-success/85 text-white shadow-sm",
+  ghost: "bg-transparent hover:bg-brand-faint text-ink-secondary",
 };
 
+// サイズごとのスタイル
 const sizeClasses = {
   sm: "px-3 py-1.5 text-sm",
   md: "px-4 py-2 text-sm",
@@ -41,7 +45,7 @@ const Button = ({
       disabled={disabled}
       onClick={onClick}
       className={`
-        inline-flex items-center justify-center gap-2 rounded-md font-medium
+        inline-flex items-center justify-center gap-2 rounded-lg font-medium
         transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
         ${variantClasses[variant]} ${sizeClasses[size]} ${className}
       `}

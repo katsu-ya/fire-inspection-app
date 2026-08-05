@@ -2,9 +2,11 @@ services:
   # MySQLデータベース
   db:
     image: mysql:8.0
-    # 日本語文字化け防止: utf8mb4 を強制
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    # 日本語文字化け防止: utf8mb4 を強制。タイムゾーンはJSTに固定（CURDATE等の日付ズレ防止）
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time-zone=+09:00
     env_file: .env
+    environment:
+      - TZ=Asia/Tokyo
     ports:
       - "3306:3306"
     volumes:
@@ -19,14 +21,20 @@ services:
     networks:
       - app_network
 
-  # FastAPIバックエンド
+  # Spring Bootバックエンド
   backend:
     build: ./backend
     env_file: .env
+    environment:
+      # JVM・OSのタイムゾーンをJSTに固定（JDBCの日付変換ズレ防止）
+      - TZ=Asia/Tokyo
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
-      - ./backend/app:/app/app
+      # ソースをマウント（変更後は docker compose restart backend で反映）
+      - ./backend/src:/app/src
+      # Mavenローカルリポジトリをキャッシュして再起動を高速化
+      - maven_cache:/root/.m2
     depends_on:
       db:
         condition: service_healthy
@@ -49,9 +57,10 @@ services:
     networks:
       - app_network
 
-# 名前付きボリューム（DBデータの永続化）
+# 名前付きボリューム（DBデータ・Mavenキャッシュの永続化）
 volumes:
   mysql_data:
+  maven_cache:
 
 # サービス間通信用ブリッジネットワーク
 networks:

@@ -1,5 +1,10 @@
 # 環境変数（シークレット情報を含むためコミット禁止）
 .env
+.env.bak
+
+# Java / Maven
+target/
+*.class
 
 # Node.js
 node_modules/

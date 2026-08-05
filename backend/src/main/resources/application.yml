@@ -1,0 +1,42 @@
+# 消防保守点検システム バックエンド設定
+spring:
+  application:
+    name: fire-inspection-backend
+
+  # データソース（MySQL）
+  datasource:
+    url: jdbc:mysql://db:3306/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Tokyo
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA設定（DDLは mysql/init.sql で管理するため ddl-auto は none）
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
+  # JSONは snake_case・日付はISO文字列で統一
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: Asia/Tokyo
+
+# actuatorはhealthのみ公開
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+# サーバーポート（docker-composeの8080:8080に合わせる）
+server:
+  port: 8080
+
+# アプリ独自設定（JWT）
+app:
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+    access-token-expire-minutes: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:30}
+    refresh-token-expire-days: ${JWT_REFRESH_TOKEN_EXPIRE_DAYS:7}

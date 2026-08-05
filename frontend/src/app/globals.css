@@ -2,42 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ベーススタイル: カスタムカラーをhtmlレベルで確実に適用する */
+/* ベーススタイル: ライトテーマ基調 */
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
-    @apply bg-background-primary text-text-primary;
+    @apply bg-surface-page text-ink;
   }
 
-  /* スクロールバーをダークテーマに合わせる */
+  /* スクロールバーを控えめな色に合わせる */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-background-secondary;
+    @apply bg-surface-page;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-background-tertiary rounded-full;
+    @apply bg-surface-border rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-accent-muted;
+    @apply bg-ink-muted;
   }
 
-  /* select要素のデフォルト色を上書きする */
-  select option {
-    @apply bg-background-secondary text-text-primary;
-  }
-
-  /* input[type=date] のカレンダーアイコンをダークに合わせる */
+  /* input[type=date] のカレンダーアイコン */
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.8);
     cursor: pointer;
   }
 }

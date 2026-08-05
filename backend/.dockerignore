@@ -1,10 +1,8 @@
-__pycache__/
-*.pyc
-*.pyo
-.Python
-.venv/
-venv/
-*.egg-info/
+target/
 .env
 .git/
 .gitignore
+# 旧FastAPI実装の残骸（setup.shで削除される）
+app/
+requirements.txt
+__pycache__/

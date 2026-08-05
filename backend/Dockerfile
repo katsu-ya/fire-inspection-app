@@ -1,15 +1,16 @@
-FROM python:3.12-slim
+# 開発用Dockerfile: Mavenイメージでそのまま起動する
+FROM maven:3.9-eclipse-temurin-21
 
 WORKDIR /app
 
-# 依存パッケージをインストール
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 依存関係を先に解決してレイヤーキャッシュを効かせる
+COPY pom.xml .
+RUN mvn -B -q dependency:go-offline
 
-# アプリケーションコードをコピー
-COPY . .
+# アプリケーションコードをコピー（開発時は docker-compose で src/ をマウント）
+COPY src ./src
 
-EXPOSE 8000
+EXPOSE 8080
 
-# ホットリロードを有効にして起動
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Spring Bootを起動（ソース変更後は docker compose restart backend で反映）
+CMD ["mvn", "spring-boot:run"]
