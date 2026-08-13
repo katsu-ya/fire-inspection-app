@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import api, { getApiErrorMessage } from "@/lib/api";
 import {
   ASSIGNMENT_STATUS_LABEL,
+  addDays,
   formatDateLabel,
   formatMinutes,
   formatTime,
@@ -24,7 +25,7 @@ const STATUS_VARIANT: Record<AssignmentStatus, BadgeVariant> = {
 };
 
 const DailyReportPage = () => {
-  const date = todayString();
+  const [date, setDate] = useState(todayString());
   const [report, setReport] = useState<DailyReportResponse | null>(null);
   const [specialNote, setSpecialNote] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -78,10 +79,35 @@ const DailyReportPage = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-lg font-bold text-ink">
-        日報 <span className="text-sm font-normal text-ink-secondary">{formatDateLabel(date)}</span>
-      </h1>
+
+
+    <div className="space-y-4"> 
+    <div className="flex items-center justify-between rounded-xl border border-surface-border bg-surface-card px-2 py-2 shadow-sm">
+      <button
+        onClick={() => setDate(addDays(date, -1))}
+        disabled={date <= addDays(todayString(), -3)}
+        className="flex h-10 w-10 items-center justify-center rounded-lg text-ink-secondary transition-all duration-200 hover:bg-brand-faint disabled:opacity-30"
+        aria-label="前日"
+      >
+        ‹
+      </button>
+      <div className="text-center">
+        <h1 className="text-lg font-bold text-ink">
+          日報 <span className="text-sm font-normal text-ink-secondary">{formatDateLabel(date)}</span>
+        </h1>
+        {date !== todayString() && (
+          <button
+            onClick={() => setDate(todayString())}
+            className="text-xs text-brand transition-all duration-200 hover:underline"
+          >
+            今日に戻る
+          </button>
+        )}
+      </div>
+      <div className="h-10 w-10" /> {/* 右側の空白（翌日ボタンは日報では不要なため、バランス用） */}
+    </div>
+
+
 
       {/* エラーメッセージ */}
       {error && (
