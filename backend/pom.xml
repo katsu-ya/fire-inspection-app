@@ -69,6 +69,16 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Flyway（DBマイグレーション） -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
         <!-- JWT (jjwt 0.12系) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
