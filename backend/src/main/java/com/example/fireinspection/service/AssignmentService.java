@@ -210,7 +210,8 @@ public class AssignmentService {
                             InspectionResult result = resultsByItem.get(item.getId());
                             return new InspectionItemResultResponse(
                                     item.getId(),
-                                    item.getCategory(),
+                                    item.getEquipmentCategory().getId(),
+                                    item.getEquipmentCategory().getName(),
                                     item.getName(),
                                     item.getDisplayOrder(),
                                     result != null ? result.getResult() : null,

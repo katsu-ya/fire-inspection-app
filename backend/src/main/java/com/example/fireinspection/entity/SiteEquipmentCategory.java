@@ -14,36 +14,29 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 点検項目マスタエンティティ（全現場共通フォーマット）
+ * 現場×設備カテゴリの紐付けエンティティ
  */
 @Entity
-@Table(name = "inspection_items")
+@Table(name = "site_equipment_categories")
 @Getter
 @Setter
 @NoArgsConstructor
-public class InspectionItem {
+public class SiteEquipmentCategory {
 
     /** ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 現場 */
+    @ManyToOne
+    @JoinColumn(name = "site_id", nullable = false)
+    private Site site;
+
     /** 設備カテゴリ */
     @ManyToOne
     @JoinColumn(name = "equipment_category_id", nullable = false)
     private EquipmentCategory equipmentCategory;
-
-    /** 点検内容 */
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    /** 表示順 */
-    @Column(name = "display_order", nullable = false)
-    private Integer displayOrder = 0;
-
-    /** 有効フラグ */
-    @Column(name = "is_active")
-    private Boolean isActive = true;
 
     /** 作成日時（DB側で自動設定） */
     @Column(name = "created_at", insertable = false, updatable = false)

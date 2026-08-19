@@ -3,28 +3,31 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import api, { getApiErrorMessage } from "@/lib/api";
-import type { InspectionItem, InspectionItemRequest } from "@/types";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import type { InspectionItem, InspectionItemRequest, EquipmentCategory } from "@/types";
+import Select from "@/components/ui/Select";
 
 // フォームの入力値（display_orderは文字列で保持して送信時に数値化）
+// 修正後
 type ItemForm = {
-  category: string;
+  equipment_category_id: string;   // ドロップダウンの、値なので、"文字列"として、保持
   name: string;
   display_order: string;
 };
 
 const EMPTY_FORM: ItemForm = {
-  category: "",
+  equipment_category_id: "",
   name: "",
   display_order: "0",
 };
 
 const ItemsPage = () => {
   const [items, setItems] = useState<InspectionItem[]>([]);
+  const [categories, setCategories] = useState<EquipmentCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   // モーダル状態（editTarget=nullなら新規登録）
@@ -53,28 +56,60 @@ const ItemsPage = () => {
     }
   }, []);
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      const { data } = await api.get<EquipmentCategory[]>(
+        "/api/v1/admin/equipment-categories"
+      );
+      setCategories(data);
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "設備カテゴリの取得に失敗しました"));
+    }
+  }, []);
+
+  // useEffect は、"1つに、まとめる"（既存の、ものを、書き換える）
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+      fetchItems();
+      fetchCategories();
+  }, [fetchItems, fetchCategories]);
 
   // カテゴリごとにグループ化する（APIの並び順を維持）
   const groupedItems = useMemo(() => {
-    const groups: Array<{ category: string; items: InspectionItem[] }> = [];
-    items.forEach((item) => {
-      const group = groups.find((g) => g.category === item.category);
-      if (group) {
-        group.items.push(item);
-      } else {
-        groups.push({ category: item.category, items: [item] });
-      }
-    });
-    return groups;
+      const groups: Array<{
+        equipment_category_id: number;
+        equipment_category_name: string;
+        items: InspectionItem[];
+      }> = [];
+      items.forEach((item) => {
+        const group = groups.find(
+          (g) => g.equipment_category_id === item.equipment_category_id
+        );
+        if (group) {
+          group.items.push(item);
+        } else {
+          groups.push({
+            equipment_category_id: item.equipment_category_id,
+            equipment_category_name: item.equipment_category_name,
+            items: [item],
+          });
+        }
+      });
+      return groups;
   }, [items]);
 
+  const categoryOptions = useMemo(
+    () =>
+      categories.map((c) => ({
+        value: String(c.id),
+        label: c.name,
+      })),
+    [categories]
+  );
+
   // 新規登録モーダルを開く（カテゴリ指定があれば初期値にする）
-  const openCreateModal = (category = "") => {
+  const openCreateModal = (equipmentCategoryId = "") => {
     setEditTarget(null);
-    setForm({ ...EMPTY_FORM, category });
+    setForm({ ...EMPTY_FORM, equipment_category_id: equipmentCategoryId });
     setFormError("");
     setIsModalOpen(true);
   };
@@ -83,7 +118,7 @@ const ItemsPage = () => {
   const openEditModal = (item: InspectionItem) => {
     setEditTarget(item);
     setForm({
-      category: item.category,
+      equipment_category_id: String(item.equipment_category_id),
       name: item.name,
       display_order: String(item.display_order),
     });
@@ -97,7 +132,7 @@ const ItemsPage = () => {
     setFormError("");
     try {
       const body: InspectionItemRequest = {
-        category: form.category,
+        equipment_category_id: Number(form.equipment_category_id),
         name: form.name,
         display_order: Number(form.display_order) || 0,
       };
@@ -161,13 +196,13 @@ const ItemsPage = () => {
       ) : (
         groupedItems.map((group) => (
           <Card
-            key={group.category}
-            title={group.category}
+            key={group.equipment_category_id}
+            title={group.equipment_category_name}
             action={
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => openCreateModal(group.category)}
+                onClick={() => openCreateModal(String(group.equipment_category_id))}
               >
                 このカテゴリに追加
               </Button>
@@ -219,11 +254,12 @@ const ItemsPage = () => {
               {formError}
             </div>
           )}
-          <Input
+          <Select
             label="設備カテゴリ"
-            value={form.category}
-            onChange={(v) => setForm({ ...form, category: v })}
-            placeholder="消火器具・自動火災報知設備など"
+            value={form.equipment_category_id}
+            onChange={(v) => setForm({ ...form, equipment_category_id: v })}
+            options={categoryOptions}
+            placeholder="選択してください"
             required
           />
           <Input

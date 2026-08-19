@@ -6,44 +6,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * 点検項目マスタエンティティ（全現場共通フォーマット）
+ * 設備カテゴリマスタエンティティ
  */
 @Entity
-@Table(name = "inspection_items")
+@Table(name = "equipment_categories")
 @Getter
 @Setter
 @NoArgsConstructor
-public class InspectionItem {
+public class EquipmentCategory {
 
     /** ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** 設備カテゴリ */
-    @ManyToOne
-    @JoinColumn(name = "equipment_category_id", nullable = false)
-    private EquipmentCategory equipmentCategory;
-
-    /** 点検内容 */
-    @Column(name = "name", nullable = false)
+    /** カテゴリ名 */
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
-
-    /** 表示順 */
-    @Column(name = "display_order", nullable = false)
-    private Integer displayOrder = 0;
-
-    /** 有効フラグ */
-    @Column(name = "is_active")
-    private Boolean isActive = true;
 
     /** 作成日時（DB側で自動設定） */
     @Column(name = "created_at", insertable = false, updatable = false)

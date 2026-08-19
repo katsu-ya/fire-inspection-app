@@ -34,7 +34,7 @@ public interface InspectionResultRepository extends JpaRepository<InspectionResu
 
     /** 期間内の指定結果（FAIL等）の件数を設備カテゴリ別に集計（件数降順） */
     @Query("""
-            SELECT it.category, COUNT(r.id)
+            SELECT it.equipmentCategory.name, COUNT(r.id)
             FROM InspectionResult r, InspectionReport ir, RouteAssignment ra, InspectionItem it
             WHERE r.inspectionReportId = ir.id
               AND ir.routeAssignmentId = ra.id
@@ -42,7 +42,7 @@ public interface InspectionResultRepository extends JpaRepository<InspectionResu
               AND r.result = :result
               AND (:dateFrom IS NULL OR ra.workDate >= :dateFrom)
               AND (:dateTo IS NULL OR ra.workDate <= :dateTo)
-            GROUP BY it.category
+            GROUP BY it.equipmentCategory.name
             ORDER BY COUNT(r.id) DESC
             """)
     List<Object[]> countByCategoryAndResult(@Param("dateFrom") LocalDate dateFrom,

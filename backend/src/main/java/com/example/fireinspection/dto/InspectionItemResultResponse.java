@@ -7,7 +7,8 @@ import com.example.fireinspection.entity.ResultStatus;
  */
 public record InspectionItemResultResponse(
         Long itemId,
-        String category,
+        Long equipmentCategoryId,
+        String equipmentCategoryName,
         String name,
         Integer displayOrder,
         ResultStatus result,
