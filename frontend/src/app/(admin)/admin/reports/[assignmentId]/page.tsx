@@ -61,15 +61,25 @@ const ReportDetailPage = () => {
   // カテゴリごとにグループ化する（display_order順を維持）
   const groupedItems = useMemo(() => {
     if (!report) return [];
-    const groups: Array<{ category: string; items: InspectionFormItem[] }> = [];
+    const groups: Array<{
+      equipment_category_id: number;
+      equipment_category_name: string;
+      items: InspectionFormItem[];
+    }> = [];
     [...report.items]
       .sort((a, b) => a.display_order - b.display_order)
       .forEach((item) => {
-        const group = groups.find((g) => g.category === item.category);
+        const group = groups.find(
+          (g) => g.equipment_category_id === item.equipment_category_id
+        );
         if (group) {
           group.items.push(item);
         } else {
-          groups.push({ category: item.category, items: [item] });
+          groups.push({
+            equipment_category_id: item.equipment_category_id,
+            equipment_category_name: item.equipment_category_name,
+            items: [item],
+          });
         }
       });
     return groups;
@@ -142,7 +152,7 @@ const ReportDetailPage = () => {
 
       {/* カテゴリごとの点検結果 */}
       {groupedItems.map((group) => (
-        <Card key={group.category} title={group.category} noPadding>
+        <Card key={group.equipment_category_id} title={group.equipment_category_name} noPadding>
           <ul>
             {group.items.map((item) => (
               <li

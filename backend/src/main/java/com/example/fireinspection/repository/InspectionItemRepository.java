@@ -17,4 +17,7 @@ public interface InspectionItemRepository extends JpaRepository<InspectionItem, 
 
     /** 指定した設備カテゴリIDの一覧に属する、点検項目を取得する（参照側・新規追加） */
     List<InspectionItem> findByEquipmentCategoryIdInOrderByEquipmentCategoryIdAscDisplayOrderAsc(List<Long> equipmentCategoryIds);
+
+    /** 指定した設備カテゴリIDの一覧に属し、有効な、点検項目を取得する（点検フォーム表示用・新規追加） */
+    List<InspectionItem> findByEquipmentCategoryIdInAndIsActiveTrueOrderByDisplayOrderAsc(List<Long> equipmentCategoryIds);
 }

@@ -51,11 +51,11 @@ const InspectionForm = ({
   });
   const [remarks, setRemarks] = useState(initialRemarks ?? "");
   // カテゴリごとの開閉状態（初期状態はすべて開く）
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(
+  const [openCategories, setOpenCategories] = useState<Record<number, boolean>>(
     () => {
-      const map: Record<string, boolean> = {};
+      const map: Record<number, boolean> = {};
       items.forEach((item) => {
-        map[item.category] = true;
+        map[item.equipment_category_id] = true;
       });
       return map;
     }
@@ -63,18 +63,28 @@ const InspectionForm = ({
 
   // カテゴリごとにグループ化する（display_order順を維持）
   const groupedItems = useMemo(() => {
-    const groups: Array<{ category: string; items: InspectionFormItem[] }> = [];
+    const groups: Array<{
+      equipment_category_id: number;
+      equipment_category_name: string;
+      items: InspectionFormItem[];
+    }> = [];
     [...items]
       .sort((a, b) => a.display_order - b.display_order)
       .forEach((item) => {
-        const group = groups.find((g) => g.category === item.category);
+        const group = groups.find(
+          (g) => g.equipment_category_id === item.equipment_category_id
+        );
         if (group) {
           group.items.push(item);
         } else {
-          groups.push({ category: item.category, items: [item] });
-        }
-      });
-    return groups;
+          groups.push({
+            equipment_category_id: item.equipment_category_id,
+            equipment_category_name: item.equipment_category_name,
+            items: [item],
+          });
+       }
+     });
+   return groups;
   }, [items]);
 
   // 未入力の項目数
@@ -99,11 +109,11 @@ const InspectionForm = ({
   };
 
   // カテゴリ内をすべて「良」にする
-  const setAllPassInCategory = (category: string) => {
+  const setAllPassInCategory = (categoryId: number) => {
     setEntries((prev) => {
       const next = { ...prev };
       items
-        .filter((item) => item.category === category)
+        .filter((item) => item.equipment_category_id === categoryId)
         .forEach((item) => {
           next[item.item_id] = { ...next[item.item_id], result: "PASS" };
         });
@@ -112,8 +122,8 @@ const InspectionForm = ({
   };
 
   // カテゴリの開閉を切り替える
-  const toggleCategory = (category: string) => {
-    setOpenCategories((prev) => ({ ...prev, [category]: !prev[category] }));
+  const toggleCategory = (categoryId: number) => {
+    setOpenCategories((prev) => ({ ...prev, [categoryId]: !prev[categoryId] }));
   };
 
   // 一時保存を実行する（入力済みの項目のみ送信する）
@@ -136,24 +146,24 @@ const InspectionForm = ({
     <div className="space-y-4 pb-24">
       {/* カテゴリごとのアコーディオン */}
       {groupedItems.map((group) => {
-        const isOpen = openCategories[group.category] ?? true;
+        const isOpen = openCategories[group.equipment_category_id] ?? true;
         const entered = group.items.filter(
           (item) => (entries[item.item_id]?.result ?? null) !== null
         ).length;
         return (
           <section
-            key={group.category}
+            key={group.equipment_category_id}
             className="overflow-hidden rounded-xl border border-surface-border bg-surface-card shadow-sm"
           >
             {/* カテゴリヘッダー */}
             <button
               type="button"
-              onClick={() => toggleCategory(group.category)}
+              onClick={() => toggleCategory(group.equipment_category_id)}
               className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-all duration-200 hover:bg-surface-page/60"
             >
               <span className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-ink">
-                  {group.category}
+                  {group.equipment_category_name}
                 </span>
                 <span className="rounded-full bg-surface-page px-2 py-0.5 text-[11px] text-ink-secondary">
                   {entered} / {group.items.length}
@@ -168,7 +178,7 @@ const InspectionForm = ({
                 <div className="flex justify-end px-4 pt-3">
                   <button
                     type="button"
-                    onClick={() => setAllPassInCategory(group.category)}
+                    onClick={() => setAllPassInCategory(group.equipment_category_id)}
                     className="rounded-md border border-status-success/40 px-2.5 py-1 text-xs font-medium text-status-success transition-all duration-200 hover:bg-status-success/10"
                   >
                     このカテゴリを一括で良にする

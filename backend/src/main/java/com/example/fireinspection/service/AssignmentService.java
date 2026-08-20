@@ -34,7 +34,9 @@ import com.example.fireinspection.repository.InspectionItemRepository;
 import com.example.fireinspection.repository.InspectionReportRepository;
 import com.example.fireinspection.repository.InspectionResultRepository;
 import com.example.fireinspection.repository.RouteAssignmentRepository;
+import com.example.fireinspection.repository.SiteEquipmentCategoryRepository;
 import com.example.fireinspection.repository.SiteRepository;
+import com.example.fireinspection.repository.SiteEquipmentCategoryRepository;
 
 /**
  * 従業員の作業報告サービス（ルート閲覧・到着/離脱報告・点検入力）
@@ -47,17 +49,20 @@ public class AssignmentService {
     private final InspectionReportRepository inspectionReportRepository;
     private final InspectionResultRepository inspectionResultRepository;
     private final InspectionItemRepository inspectionItemRepository;
+    private final SiteEquipmentCategoryRepository siteEquipmentCategoryRepository;
 
     public AssignmentService(RouteAssignmentRepository routeAssignmentRepository,
                              SiteRepository siteRepository,
                              InspectionReportRepository inspectionReportRepository,
                              InspectionResultRepository inspectionResultRepository,
-                             InspectionItemRepository inspectionItemRepository) {
+                             InspectionItemRepository inspectionItemRepository,
+                             SiteEquipmentCategoryRepository siteEquipmentCategoryRepository) {
         this.routeAssignmentRepository = routeAssignmentRepository;
         this.siteRepository = siteRepository;
         this.inspectionReportRepository = inspectionReportRepository;
         this.inspectionResultRepository = inspectionResultRepository;
         this.inspectionItemRepository = inspectionItemRepository;
+        this.siteEquipmentCategoryRepository = siteEquipmentCategoryRepository;
     }
 
     /**
@@ -204,8 +209,12 @@ public class AssignmentService {
                 .stream()
                 .collect(Collectors.toMap(InspectionResult::getInspectionItemId, Function.identity()));
 
+        List<Long> categoryIds = siteEquipmentCategoryRepository.findBySiteId(assignment.getSiteId()).stream()
+                .map(link -> link.getEquipmentCategory().getId())
+                .toList();
+
         List<InspectionItemResultResponse> items =
-                inspectionItemRepository.findByIsActiveTrueOrderByDisplayOrderAsc().stream()
+                inspectionItemRepository.findByEquipmentCategoryIdInAndIsActiveTrueOrderByDisplayOrderAsc(categoryIds).stream()
                         .map(item -> {
                             InspectionResult result = resultsByItem.get(item.getId());
                             return new InspectionItemResultResponse(
