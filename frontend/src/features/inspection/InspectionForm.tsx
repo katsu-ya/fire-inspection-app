@@ -144,23 +144,29 @@ const InspectionForm = ({
 
   return (
     <div className="space-y-4 pb-24">
-      {/* カテゴリごとのアコーディオン */}
-      {groupedItems.map((group) => {
-        const isOpen = openCategories[group.equipment_category_id] ?? true;
-        const entered = group.items.filter(
-          (item) => (entries[item.item_id]?.result ?? null) !== null
-        ).length;
-        return (
-          <section
-            key={group.equipment_category_id}
-            className="overflow-hidden rounded-xl border border-surface-border bg-surface-card shadow-sm"
-          >
+      {groupedItems.length === 0 ? (
+        <div className="rounded-xl border border-surface-border bg-surface-card p-6 text-center text-sm text-ink-secondary">
+          設備カテゴリが未設定です。管理者にお問い合わせください。
+        </div>
+      ) : (
+        <>
+          {/* カテゴリごとのアコーディオン */}
+          {groupedItems.map((group) => {
+            const isOpen = openCategories[group.equipment_category_id] ?? true;
+            const entered = group.items.filter(
+              (item) => (entries[item.item_id]?.result ?? null) !== null
+            ).length;
+            return (
+              <section
+                key={group.equipment_category_id}
+                className="overflow-hidden rounded-xl border border-surface-border bg-surface-card shadow-sm"
+              >
             {/* カテゴリヘッダー */}
             <button
               type="button"
               onClick={() => toggleCategory(group.equipment_category_id)}
               className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-all duration-200 hover:bg-surface-page/60"
-            >
+              >
               <span className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-ink">
                   {group.equipment_category_name}
@@ -247,9 +253,10 @@ const InspectionForm = ({
               </div>
             )}
           </section>
-        );
+        );     
       })}
-
+        </>
+      )}   
       {/* 全体所見 */}
       <div className="rounded-xl border border-surface-border bg-surface-card p-4 shadow-sm">
         <Textarea

@@ -36,7 +36,6 @@ import com.example.fireinspection.repository.InspectionResultRepository;
 import com.example.fireinspection.repository.RouteAssignmentRepository;
 import com.example.fireinspection.repository.SiteEquipmentCategoryRepository;
 import com.example.fireinspection.repository.SiteRepository;
-import com.example.fireinspection.repository.SiteEquipmentCategoryRepository;
 
 /**
  * 従業員の作業報告サービス（ルート閲覧・到着/離脱報告・点検入力）

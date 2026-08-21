@@ -110,6 +110,7 @@ public class SiteService {
     /** 設備カテゴリの紐付けを保存する */
     private void saveEquipmentCategories(Site site, List<Long> equipmentCategoryIds) {
         List<SiteEquipmentCategory> links = equipmentCategoryIds.stream()
+                .distinct()
                 .map(categoryId -> {
                     EquipmentCategory category = equipmentCategoryRepository.findById(categoryId)
                             .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "設備カテゴリが見つかりません"));
