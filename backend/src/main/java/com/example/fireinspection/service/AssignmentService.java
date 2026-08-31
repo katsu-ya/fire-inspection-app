@@ -207,7 +207,8 @@ public class AssignmentService {
                 .orElse(List.of())
                 .stream()
                 .collect(Collectors.toMap(InspectionResult::getInspectionItemId, Function.identity()));
-
+                
+        // 現場に紐づく設備カテゴリIDを取得する
         List<Long> categoryIds = siteEquipmentCategoryRepository.findBySiteId(assignment.getSiteId()).stream()
                 .map(link -> link.getEquipmentCategory().getId())
                 .toList();
