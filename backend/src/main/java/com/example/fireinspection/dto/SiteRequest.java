@@ -1,5 +1,7 @@
 package com.example.fireinspection.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -22,6 +24,9 @@ public record SiteRequest(
         String contactPhone,
 
         /** 備考（入館方法など） */
-        String note
+        String note,
+
+        @NotEmpty(message = "設備カテゴリを1つ以上選択してください")
+        List<Long> equipmentCategoryIds
 ) {
 }

@@ -34,6 +34,7 @@ import com.example.fireinspection.repository.InspectionItemRepository;
 import com.example.fireinspection.repository.InspectionReportRepository;
 import com.example.fireinspection.repository.InspectionResultRepository;
 import com.example.fireinspection.repository.RouteAssignmentRepository;
+import com.example.fireinspection.repository.SiteEquipmentCategoryRepository;
 import com.example.fireinspection.repository.SiteRepository;
 
 /**
@@ -47,17 +48,20 @@ public class AssignmentService {
     private final InspectionReportRepository inspectionReportRepository;
     private final InspectionResultRepository inspectionResultRepository;
     private final InspectionItemRepository inspectionItemRepository;
+    private final SiteEquipmentCategoryRepository siteEquipmentCategoryRepository;
 
     public AssignmentService(RouteAssignmentRepository routeAssignmentRepository,
                              SiteRepository siteRepository,
                              InspectionReportRepository inspectionReportRepository,
                              InspectionResultRepository inspectionResultRepository,
-                             InspectionItemRepository inspectionItemRepository) {
+                             InspectionItemRepository inspectionItemRepository,
+                             SiteEquipmentCategoryRepository siteEquipmentCategoryRepository) {
         this.routeAssignmentRepository = routeAssignmentRepository;
         this.siteRepository = siteRepository;
         this.inspectionReportRepository = inspectionReportRepository;
         this.inspectionResultRepository = inspectionResultRepository;
         this.inspectionItemRepository = inspectionItemRepository;
+        this.siteEquipmentCategoryRepository = siteEquipmentCategoryRepository;
     }
 
     /**
@@ -203,14 +207,20 @@ public class AssignmentService {
                 .orElse(List.of())
                 .stream()
                 .collect(Collectors.toMap(InspectionResult::getInspectionItemId, Function.identity()));
+                
+        // 現場に紐づく設備カテゴリIDを取得する
+        List<Long> categoryIds = siteEquipmentCategoryRepository.findBySiteId(assignment.getSiteId()).stream()
+                .map(link -> link.getEquipmentCategory().getId())
+                .toList();
 
         List<InspectionItemResultResponse> items =
-                inspectionItemRepository.findByIsActiveTrueOrderByDisplayOrderAsc().stream()
+                inspectionItemRepository.findByEquipmentCategoryIdInAndIsActiveTrueOrderByDisplayOrderAsc(categoryIds).stream()
                         .map(item -> {
                             InspectionResult result = resultsByItem.get(item.getId());
                             return new InspectionItemResultResponse(
                                     item.getId(),
-                                    item.getCategory(),
+                                    item.getEquipmentCategory().getId(),
+                                    item.getEquipmentCategory().getName(),
                                     item.getName(),
                                     item.getDisplayOrder(),
                                     result != null ? result.getResult() : null,

@@ -3,7 +3,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import api, { getApiErrorMessage } from "@/lib/api";
-import type { Site, SiteRequest } from "@/types";
+//import type { Site, SiteRequest } from "@/types";
+import type { Site, SiteRequest, EquipmentCategory } from "@/types";
 import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
@@ -20,10 +21,12 @@ const EMPTY_FORM: SiteRequest = {
   contact_name: "",
   contact_phone: "",
   note: "",
+  equipment_category_ids: [],
 };
 
 const SitesPage = () => {
   const [sites, setSites] = useState<Site[]>([]);
+  const [categories, setCategories] = useState<EquipmentCategory[]>([]);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -53,9 +56,21 @@ const SitesPage = () => {
     }
   }, []);
 
+  const fetchCategories = useCallback(async () => {
+    try {
+       const { data } = await api.get<EquipmentCategory[]>(
+          "/api/v1/admin/equipment-categories"
+          );
+          setCategories(data);
+        } catch (err: unknown) {
+          setError(getApiErrorMessage(err, "設備カテゴリの取得に失敗しました"));
+        }
+    }, []);
+
   useEffect(() => {
-    fetchSites("");
-  }, [fetchSites]);
+      fetchSites("");
+      fetchCategories();
+  }, [fetchSites, fetchCategories]);
 
   // 新規登録モーダルを開く
   const openCreateModal = () => {
@@ -75,6 +90,7 @@ const SitesPage = () => {
       contact_name: site.contact_name ?? "",
       contact_phone: site.contact_phone ?? "",
       note: site.note ?? "",
+      equipment_category_ids: site.equipment_categories.map((c) => c.id),
     });
     setFormError("");
     setIsModalOpen(true);
@@ -251,6 +267,46 @@ const SitesPage = () => {
             onChange={(v) => setForm({ ...form, note: v })}
             rows={3}
           />
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-ink-secondary">
+              設備カテゴリ
+              <span className="text-status-danger ml-1">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2 rounded-lg border border-surface-border p-4 sm:grid-cols-3">
+              {categories.map((category) => (
+                <label
+                  key={category.id}
+                  className="flex items-center gap-2 text-sm text-ink"
+                >
+                  <input
+                  type="checkbox"
+                    checked={form.equipment_category_ids.includes(category.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setForm({
+                        ...form,
+                        equipment_category_ids: [
+                        ...form.equipment_category_ids,
+                        category.id,
+                      ],
+                        });
+                      } else {
+                      setForm({
+                      ...form,
+                      equipment_category_ids: form.equipment_category_ids.filter(
+                       (id) => id !== category.id
+                        ),
+                      });
+                    }
+                  }}
+                  />
+                  {category.name}
+               </label>
+              ))}
+            </div>
+          </div>
+
           <div className="flex justify-end gap-3 pt-2">
             <Button
               variant="secondary"

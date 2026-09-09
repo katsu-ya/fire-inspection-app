@@ -37,6 +37,12 @@ export type RefreshResponse = {
 
 // ============ マスタ ============
 
+// 設備カテゴリマスタ
+export type EquipmentCategory = {
+  id: number;
+  name: string;
+};
+
 // 現場マスタ
 export type Site = {
   id: number;
@@ -47,6 +53,7 @@ export type Site = {
   contact_phone: string | null;
   note: string | null;
   is_active: boolean;
+  equipment_categories: EquipmentCategory[];
 };
 
 // 現場概要（assignment・点検報告詳細に埋め込まれる形。is_activeは返されない）
@@ -60,12 +67,14 @@ export type SiteRequest = {
   contact_name: string;
   contact_phone: string;
   note: string;
+  equipment_category_ids: number[];
 };
 
 // 点検項目マスタ
 export type InspectionItem = {
   id: number;
-  category: string;
+  equipment_category_id: number;      // ← 追加
+  equipment_category_name: string;    // ← 追加
   name: string;
   display_order: number;
   is_active: boolean;
@@ -73,7 +82,7 @@ export type InspectionItem = {
 
 // 点検項目の登録・更新リクエスト
 export type InspectionItemRequest = {
-  category: string;
+  equipment_category_id: number;      // ← 追加
   name: string;
   display_order: number;
 };
@@ -148,7 +157,8 @@ export type RouteBulkRequest = {
 // 点検フォームの項目（未入力はresult=null）
 export type InspectionFormItem = {
   item_id: number;
-  category: string;
+  equipment_category_id: number;      // ← 追加
+  equipment_category_name: string;    // ← 追加
   name: string;
   display_order: number;
   result: InspectionResultValue | null;

@@ -233,19 +233,29 @@ const VisitContent = () => {
   // 読み取り専用表示用: カテゴリごとにグループ化する
   const groupedItems = useMemo(() => {
     if (!inspection) return [];
-    const groups: Array<{ category: string; items: InspectionFormItem[] }> = [];
+    const groups: Array<{
+      equipment_category_id: number;
+      equipment_category_name: string;
+      items: InspectionFormItem[];
+    }> = [];
     [...inspection.items]
       .sort((a, b) => a.display_order - b.display_order)
       .forEach((item) => {
-        const group = groups.find((g) => g.category === item.category);
+        const group = groups.find(
+          (g) => g.equipment_category_id === item.equipment_category_id
+        );
         if (group) {
           group.items.push(item);
         } else {
-          groups.push({ category: item.category, items: [item] });
-        }
-      });
-    return groups;
-  }, [inspection]);
+          groups.push({
+            equipment_category_id: item.equipment_category_id,
+            equipment_category_name: item.equipment_category_name,
+            items: [item],
+            });
+          }
+        });
+     return groups;
+   }, [inspection]);
 
   if (isLoading) {
     return <p className="py-10 text-center text-sm text-ink-muted">読み込み中...</p>;
@@ -395,11 +405,11 @@ const VisitContent = () => {
           {/* 点検結果（読み取り専用） */}
           {groupedItems.map((group) => (
             <section
-              key={group.category}
+              key={group.equipment_category_id}
               className="overflow-hidden rounded-xl border border-surface-border bg-surface-card shadow-sm"
             >
               <p className="border-b border-surface-border px-4 py-3 text-sm font-semibold text-ink">
-                {group.category}
+                {group.equipment_category_name}
               </p>
               <ul className="divide-y divide-surface-border/60">
                 {group.items.map((item) => (
